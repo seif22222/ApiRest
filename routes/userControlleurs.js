@@ -1,7 +1,8 @@
 var bcrypt =require('bcrypt');
 var jwtUtils = require('../utils/jwt.utils');
 var models=require('../models');
-
+const EMAIL_REGEX=/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+const MDP_REGEX=/^(?=.*\d).{4,8}$/
 //routes
 module.exports={
     register: function(req,res){
@@ -13,7 +14,15 @@ var bio =req.body.bio;
 if(email == null || username == null || password == null){
     return res.status(400).json({'error':'missing paamete'});
 }
-
+if(username.length>=13 || username.length<=4){
+return res.status(400).json({'error':'wrong username (must be length 5-12'});
+}
+if(!EMAIL_REGEX.test(email)){
+    return res.status(400).json({'error':'email not valid'});
+}
+if(!MDP_REGEX.test(password)){
+    return res.status(400).json({'error':'password not valid'});
+}
 models.User.findOne({
     attributes:['email'],
     where:{email:email}
